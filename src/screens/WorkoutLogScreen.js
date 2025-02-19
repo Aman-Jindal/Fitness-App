@@ -13,7 +13,7 @@ const WorkoutLogScreen = () => {
     };
 
     return (
-        <View style={style.container}>
+        <View style={styles.container}>
             <Text style={styles.header}>Workout Log</Text>
             <TextInput
                 style={styles.input}

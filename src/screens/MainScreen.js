@@ -1,14 +1,24 @@
 // src/screens/MainScreen.js
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import theme from '../constants/theme';
 
 const MainScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Your Fitness Dashboard</Text>
-      {/* Add buttons or icons to access the features, e.g., Workout Log, Profile */}
-      <Button title="Go to Workout Log" onPress={() => navigation.navigate('WorkoutLog')} />
-      <Button title="Go to Profile" onPress={() => navigation.navigate('Profile')} style={styles.buttonSpacing} />
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('WorkoutLog')}
+      >
+        <Text style={styles.buttonText}>Workout</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('Profile')}
+      >
+        <Text style={styles.buttonText}>Profile</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -16,17 +26,31 @@ const MainScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    backgroundColor: theme.colors.background,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: theme.spacing.medium,
   },
-  title: {
-    fontSize: 22,
+  button: {
+    width: '80%',
+    height: 100,
+    backgroundColor: theme.colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 15, // Rounded corners
+    marginVertical: theme.spacing.medium,
+    // Optional shadow for iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    // Optional elevation for Android
+    elevation: 5,
+  },
+  buttonText: {
+    color: theme.colors.buttonSolidText,
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  buttonSpacing: {
-    marginTop: 10,
   },
 });
 

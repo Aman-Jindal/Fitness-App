@@ -28,8 +28,8 @@ const AppNavigator = () => {
         <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Login' }} />
         <Stack.Screen name="Register" component={RegisterScreen} options={{ title: 'Register' }} />
-        <Stack.Screen name="Main" component={MainScreen} options={{ title: 'Dashboard' }} />
-        <Stack.Screen name="WorkoutLog" component={WorkoutLogScreen} options={{ title: 'Workout Log' }} />
+        <Stack.Screen name="Main" component={MainScreen} options={{ title: 'Home' }} />
+        <Stack.Screen name="WorkoutLog" component={WorkoutLogScreen} options={{ title: 'Workout' }} />
         <Stack.Screen name="Profile" component={UserProfileScreen} options={{ title: 'My Profile' }} />
         <Stack.Screen name="Feedback" component={FeedbackScreen} options={{ title: 'Feedback' }} />
         <Stack.Screen name="Donate" component={DonateScreen} options={{ title: 'Donate' }} />

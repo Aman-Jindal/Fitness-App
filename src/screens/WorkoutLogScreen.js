@@ -71,7 +71,7 @@ const WorkoutLogScreen = () => {
             {errors.workoutType && <Text style={styles.errorText}>{errors.workoutType}</Text>}
 
             <TextInput
-                style={[styles.input, error.duration && styles.errorInput]}
+                style={[styles.input, errors.duration && styles.errorInput]}
                 placeholder="Duration (minutes)"
                 value={duration}
                 onChangeText={setDuration}

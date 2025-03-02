@@ -5,11 +5,13 @@ import { View, Text, Button, StyleSheet } from 'react-native';
 const HomeScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Welcome to My Personalized Fitness App</Text>
+            <Text style={styles.title}>Create Your Own Workouts</Text>
             <Button
                 title="Go to Workout Log"
                 onPress={() => navigation.navigate('WorkoutLog')}    
             />
+            <View style={styles.separator} />
+            <Button title="View Profile" onPress={() => navigation.navigate('Profile')} />
         </View>
     );
 };
@@ -28,6 +30,9 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333',
         marginBottom: 20,
+    },
+    separator: {
+        height: 20,
     },
 });
 

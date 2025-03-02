@@ -20,7 +20,7 @@ const WorkoutScreen = ({ navigation }) => {
       {/* Quick Start Section */}
       <TouchableOpacity 
         style={styles.quickStartButton} 
-        onPress={() => navigation.navigate('StartWorkout')}
+        onPress={() => navigation.navigate('LogWorkout')}
       >
         <Text style={styles.quickStartButtonText}>Start Your Workout</Text>
       </TouchableOpacity>

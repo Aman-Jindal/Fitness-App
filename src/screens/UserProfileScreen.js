@@ -1,136 +1,144 @@
 // src/screens/UserProfileScreen.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Button, Image, ScrollView, Alert } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import theme from '../constants/theme';
 
 const UserProfileScreen = () => {
-  // State variables for profile fields
-  const [name, setName] = useState('');
-  const [age, setAge] = useState('');
-  const [weight, setWeight] = useState('');
-  const [height, setHeight] = useState('');
-  const [bio, setBio] = useState('');
-  // Placeholder image URL for the profile photo
-  const [profileImage, setProfileImage] = useState('https://via.placeholder.com/150');
+  // Dummy flag simulating that the user is registered.
+  const isRegistered = false; // In production, this comes from your auth state.
 
-  const updateProfile = () => {
-    // For now, we simply show an alert. Later, you might persist data locally or to a backend.
-    Alert.alert('Profile Updated', 'Your profile information has been saved.');
-  };
+  // Example user data; replace with real data from your backend or state management.
+  const [userData, setUserData] = useState({
+    name: 'John Doe',
+    age: '30',
+    height: '180 cm',
+    weight: '75 kg',
+    fitnessGoals: 'Build muscle and increase endurance',
+    bio: 'Passionate about fitness and a healthy lifestyle.',
+    profileImage: 'https://via.placeholder.com/150',
+  });
+
+  // If user is not registered, display a prompt to register
+  if (!isRegistered) {
+    return (
+      <View style={styles.unregisteredContainer}>
+        <Text style={styles.unregisteredText}>
+          Please register to view your profile.
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>My Profile</Text>
-      
       <View style={styles.avatarContainer}>
-        <Image source={{ uri: profileImage }} style={styles.avatar} />
-        <Button title="Change Photo" onPress={() => Alert.alert('Coming Soon', 'Change photo functionality will be implemented soon.')} />
+        <Image source={{ uri: userData.profileImage }} style={styles.avatar} />
+        <TouchableOpacity
+          style={styles.changePhotoButton}
+          onPress={() => Alert.alert('Coming Soon', 'Change photo functionality coming soon.')}
+        >
+          <Text style={styles.changePhotoButtonText}>Change Photo</Text>
+        </TouchableOpacity>
       </View>
 
-      <View style={styles.form}>
-        <Text style={styles.label}>Name</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your name"
-          value={name}
-          onChangeText={setName}
-        />
+      <View style={styles.infoContainer}>
+        <Text style={styles.label}>Name:</Text>
+        <Text style={styles.value}>{userData.name}</Text>
 
-        <Text style={styles.label}>Age</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your age"
-          value={age}
-          onChangeText={setAge}
-          keyboardType="numeric"
-        />
+        <Text style={styles.label}>Age:</Text>
+        <Text style={styles.value}>{userData.age}</Text>
 
-        <Text style={styles.label}>Weight (kg)</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your weight"
-          value={weight}
-          onChangeText={setWeight}
-          keyboardType="numeric"
-        />
+        <Text style={styles.label}>Height:</Text>
+        <Text style={styles.value}>{userData.height}</Text>
 
-        <Text style={styles.label}>Height (cm)</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter your height"
-          value={height}
-          onChangeText={setHeight}
-          keyboardType="numeric"
-        />
+        <Text style={styles.label}>Weight:</Text>
+        <Text style={styles.value}>{userData.weight}</Text>
 
-        <Text style={styles.label}>Bio</Text>
-        <TextInput
-          style={[styles.input, styles.multiline]}
-          placeholder="Tell us about yourself"
-          value={bio}
-          onChangeText={setBio}
-          multiline
-          numberOfLines={3}
-        />
+        <Text style={styles.label}>Fitness Goals:</Text>
+        <Text style={styles.value}>{userData.fitnessGoals}</Text>
 
-        <View style={styles.updateButton}>
-          <Button title="Update Profile" onPress={updateProfile} />
-        </View>
+        <Text style={styles.label}>Bio:</Text>
+        <Text style={styles.value}>{userData.bio}</Text>
       </View>
+
+      <TouchableOpacity
+        style={styles.editButton}
+        onPress={() => Alert.alert('Edit Profile', 'Edit functionality coming soon.')}
+      >
+        <Text style={styles.editButtonText}>Edit Profile</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    backgroundColor: '#f5f5f5',
+    padding: theme.spacing.medium,
+    backgroundColor: theme.colors.background,
     flexGrow: 1,
   },
-  header: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#6200EE',
-    textAlign: 'center',
-    marginBottom: 20,
+  unregisteredContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme.colors.background,
+  },
+  unregisteredText: {
+    fontSize: 18,
+    color: theme.colors.text,
   },
   avatarContainer: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: theme.spacing.large,
   },
   avatar: {
     width: 120,
     height: 120,
     borderRadius: 60,
-    marginBottom: 10,
   },
-  form: {
-    backgroundColor: '#ffffff',
-    padding: 15,
-    borderRadius: 8,
-    // Adding subtle shadow for an elevated look
+  changePhotoButton: {
+    marginTop: theme.spacing.small,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: theme.colors.primary,
+    borderRadius: 5,
+  },
+  changePhotoButtonText: {
+    color: theme.colors.buttonSolidText,
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  infoContainer: {
+    backgroundColor: '#fff',
+    padding: theme.spacing.medium,
+    borderRadius: 10,
+    marginBottom: theme.spacing.large,
     shadowColor: '#000',
     shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 3,
+    shadowRadius: 5,
+    elevation: 2,
   },
   label: {
     fontSize: 16,
-    color: '#333',
-    marginTop: 10,
+    fontWeight: '600',
+    color: theme.colors.text,
+    marginTop: theme.spacing.small,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    marginTop: 5,
-    borderRadius: 4,
+  value: {
+    fontSize: 16,
+    color: theme.colors.text,
+    marginBottom: theme.spacing.small,
   },
-  multiline: {
-    height: 80,
-    textAlignVertical: 'top',
+  editButton: {
+    backgroundColor: theme.colors.primary,
+    paddingVertical: 15,
+    borderRadius: 5,
+    alignItems: 'center',
   },
-  updateButton: {
-    marginTop: 20,
+  editButtonText: {
+    color: theme.colors.buttonSolidText,
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 

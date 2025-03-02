@@ -6,7 +6,7 @@ import HomeScreen from '../screens/HomeScreen';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import MainScreen from '../screens/MainScreen';
-import WorkoutLogScreen from '../screens/WorkoutLogScreen';
+import WorkoutScreen from '../screens/WorkoutScreen';
 import UserProfileScreen from '../screens/UserProfileScreen';
 import FeedbackScreen from '../screens/FeedbackScreen';
 import DonateScreen from '../screens/DonateScreen';
@@ -29,7 +29,7 @@ const AppNavigator = () => {
         <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Login' }} />
         <Stack.Screen name="Register" component={RegisterScreen} options={{ title: 'Register' }} />
         <Stack.Screen name="Main" component={MainScreen} options={{ title: 'Home' }} />
-        <Stack.Screen name="WorkoutLog" component={WorkoutLogScreen} options={{ title: 'Workout' }} />
+        <Stack.Screen name="Workout" component={WorkoutScreen} options={{ title: 'Workout' }} />
         <Stack.Screen name="Profile" component={UserProfileScreen} options={{ title: 'My Profile' }} />
         <Stack.Screen name="Feedback" component={FeedbackScreen} options={{ title: 'Feedback' }} />
         <Stack.Screen name="Donate" component={DonateScreen} options={{ title: 'Donate' }} />

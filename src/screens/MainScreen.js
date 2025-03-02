@@ -8,7 +8,7 @@ const MainScreen = ({ navigation }) => {
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate('WorkoutLog')}
+        onPress={() => navigation.navigate('Workout')}
       >
         <Text style={styles.buttonText}>Workout</Text>
       </TouchableOpacity>

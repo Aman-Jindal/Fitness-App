@@ -1,25 +1,22 @@
 // src/screens/HomeScreen.js
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import theme from '../constants/theme';
 
 const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       {/* Logo Section */}
       <View style={styles.logoContainer}>
-        {/* Replace with your actual logo image */}
         <Image
-          source={{ uri: 'https://via.placeholder.com/150' }}
+          source={{ uri: 'https://via.placeholder.com/150' }} // Replace with your logo
           style={styles.logo}
         />
         <Text style={styles.logoText}>My Fitness App</Text>
       </View>
 
-      {/* Spacer */}
-      <View style={styles.spacer} />
-
       {/* Authentication Buttons */}
-      <View style={styles.buttonContainer}>
+      <View style={styles.authContainer}>
         <TouchableOpacity
           style={styles.loginButton}
           onPress={() => navigation.navigate('Login')}
@@ -33,6 +30,30 @@ const HomeScreen = ({ navigation }) => {
         >
           <Text style={styles.registerButtonText}>Register</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.skipButton}
+          onPress={() => navigation.navigate('Main')}
+        >
+          <Text style={styles.skipButtonText}>Skip</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Feedback & Donate Buttons */}
+      <View style={styles.bottomContainer}>
+        <TouchableOpacity
+          style={styles.feedbackButton}
+          onPress={() => navigation.navigate('Feedback')}
+        >
+          <Text style={styles.feedbackButtonText}>Feedback</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.donateButton}
+          onPress={() => navigation.navigate('Donate')}
+        >
+          <Text style={styles.donateButtonText}>Donate</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -41,12 +62,12 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    padding: 20,
+    backgroundColor: theme.colors.background,
+    padding: theme.spacing.medium,
     justifyContent: 'space-between',
   },
   logoContainer: {
-    backgroundColor: '#6200EE',
+    backgroundColor: theme.colors.primary,
     paddingVertical: 40,
     alignItems: 'center',
     borderRadius: 10,
@@ -58,38 +79,70 @@ const styles = StyleSheet.create({
   },
   logoText: {
     fontSize: 24,
-    color: '#fff',
+    color: theme.colors.buttonSolidText,
     fontWeight: 'bold',
   },
-  spacer: {
-    flex: 1,
-  },
-  buttonContainer: {
-    marginBottom: 40,
+  authContainer: {
+    alignItems: 'center',
   },
   loginButton: {
     borderWidth: 1,
-    borderColor: '#6200EE',
+    borderColor: theme.colors.buttonOutline,
     borderRadius: 5,
     paddingVertical: 15,
-    alignItems: 'center',
-    marginBottom: 15,
+    paddingHorizontal: 40,
+    marginBottom: 10,
   },
   loginButtonText: {
-    color: '#6200EE',
+    color: theme.colors.buttonOutline,
     fontSize: 18,
     fontWeight: 'bold',
   },
   registerButton: {
-    backgroundColor: '#6200EE',
+    backgroundColor: theme.colors.buttonSolid,
     borderRadius: 5,
     paddingVertical: 15,
-    alignItems: 'center',
+    paddingHorizontal: 40,
+    marginBottom: 10,
   },
   registerButtonText: {
-    color: '#fff',
+    color: theme.colors.buttonSolidText,
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  skipButton: {
+    paddingVertical: 10,
+  },
+  skipButtonText: {
+    color: theme.colors.primary,
+    fontSize: 16,
+    textDecorationLine: 'underline',
+  },
+  bottomContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: theme.spacing.large,
+  },
+  feedbackButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
+    borderRadius: 5,
+  },
+  feedbackButtonText: {
+    color: theme.colors.primary,
+    fontSize: 16,
+  },
+  donateButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: theme.colors.primary,
+    borderRadius: 5,
+  },
+  donateButtonText: {
+    color: theme.colors.buttonSolidText,
+    fontSize: 16,
   },
 });
 

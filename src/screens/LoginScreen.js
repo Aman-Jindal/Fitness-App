@@ -1,6 +1,7 @@
 // src/screens/LoginScreen.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import theme from '../constants/theme';
 
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
@@ -45,22 +46,22 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      padding: 20,
-      backgroundColor: '#f5f5f5',
+      padding: theme.spacing.medium,
+      backgroundColor: theme.colors.background,
       justifyContent: 'center',
     },
     header: {
       fontSize: 28,
       fontWeight: 'bold',
-      color: '#6200EE',
+      color: theme.colors.primary,
       textAlign: 'center',
-      marginBottom: 30,
+      marginBottom: theme.spacing.large,
     },
     input: {
       borderWidth: 1,
       borderColor: '#ccc',
       padding: 12,
-      marginBottom: 15,
+      marginBottom: theme.spacing.small,
       borderRadius: 5,
       backgroundColor: '#fff',
     },
@@ -68,12 +69,12 @@ const styles = StyleSheet.create({
       padding: 15,
       borderRadius: 5,
       borderWidth: 1,
-      borderColor: '#6200EE',
+      borderColor: theme.colors.primary,
       alignItems: 'center',
       marginTop: 10,
     },
     loginButtonText: {
-      color: '#6200EE',
+      color: theme.colors.primary,
       fontWeight: 'bold',
     },
   });

@@ -1,6 +1,7 @@
 // src/screens/RegisterScreen.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import theme from '../constants/theme';
 
 const RegisterScreen = ({ navigation }) => {
   const [name, setName] = useState('');
@@ -52,34 +53,35 @@ const RegisterScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#f5f5f5',
+    padding: theme.spacing.medium,
+    backgroundColor: theme.colors.background,
     justifyContent: 'center',
   },
   header: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#6200EE',
+    color: theme.colors.primary,
     textAlign: 'center',
-    marginBottom: 30,
+    marginBottom: theme.spacing.large,
   },
   input: {
     borderWidth: 1,
     borderColor: '#ccc',
     padding: 12,
-    marginBottom: 15,
+    marginBottom: theme.spacing.small,
     borderRadius: 5,
     backgroundColor: '#fff',
   },
   registerButton: {
     padding: 15,
     borderRadius: 5,
-    backgroundColor: '#6200EE',
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
     alignItems: 'center',
     marginTop: 10,
   },
   registerButtonText: {
-    color: '#fff',
+    color: theme.colors.primary,
     fontWeight: 'bold',
   },
 });

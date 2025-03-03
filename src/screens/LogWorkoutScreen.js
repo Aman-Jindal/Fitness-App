@@ -7,163 +7,251 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  ScrollView
+  ScrollView,
+  Modal,
 } from 'react-native';
 import theme from '../constants/theme';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const LogWorkoutScreen = ({ navigation }) => {
   // Timer state
   const [elapsedTime, setElapsedTime] = useState(0);
 
-  // States for current exercise
-  const [currentExerciseName, setCurrentExerciseName] = useState('');
-  const [currentSets, setCurrentSets] = useState([]);
+  // Exercises state: array of exercise objects { id, name, sets: [{id, reps, weight}] }
+  const [exercises, setExercises] = useState([]);
 
-  // List of completed exercises
-  const [completedExercises, setCompletedExercises] = useState([]);
+  // Modal state for adding new exercise
+  const [isAddExerciseModalVisible, setIsAddExerciseModalVisible] = useState(false);
+  const [newExerciseName, setNewExerciseName] = useState('');
 
-  // Start workout timer
+  // Start timer on mount
   useEffect(() => {
     const timer = setInterval(() => {
-      setElapsedTime(prev => prev + 1);
+      setElapsedTime((prev) => prev + 1);
     }, 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // Helper to format elapsed time (mm:ss)
+  // Helper to format time as mm:ss (now used as duration)
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
     const secs = (seconds % 60).toString().padStart(2, '0');
     return `${mins}:${secs}`;
   };
 
-  // Add a new set for the current exercise
-  const addSet = () => {
-    setCurrentSets([...currentSets, { id: Date.now().toString(), reps: '', weight: '' }]);
-  };
-
-  // Update a specific set field
-  const updateSetField = (id, field, value) => {
-    setCurrentSets(
-      currentSets.map(set => set.id === id ? { ...set, [field]: value } : set)
-    );
-  };
-
-  // When an exercise is complete, add it to the completed exercises list
-  const completeCurrentExercise = () => {
-    if (!currentExerciseName.trim()) {
+  // Function to add a new exercise (triggered by modal)
+  const addExercise = () => {
+    if (!newExerciseName.trim()) {
       Alert.alert('Error', 'Please enter an exercise name.');
-      return;
-    }
-    if (currentSets.length === 0) {
-      Alert.alert('Error', 'Please add at least one set for the exercise.');
       return;
     }
     const newExercise = {
       id: Date.now().toString(),
-      name: currentExerciseName,
-      sets: currentSets,
+      name: newExerciseName.trim(),
+      sets: [{ id: Date.now().toString(), reps: '', weight: '' }], // At least one set
     };
-    setCompletedExercises([...completedExercises, newExercise]);
-    // Clear the current exercise inputs for a new entry
-    setCurrentExerciseName('');
-    setCurrentSets([]);
+    setExercises([...exercises, newExercise]);
+    setNewExerciseName('');
+    setIsAddExerciseModalVisible(false);
   };
 
-  // Finish workout: Show summary and navigate back (or save data)
-  const finishWorkout = () => {
+  // Remove an entire exercise
+  const removeExercise = (exerciseId) => {
     Alert.alert(
-      'Workout Complete',
-      `Total Workout Time: ${formatTime(elapsedTime)}\nExercises Completed: ${completedExercises.length}`
-    );
-    navigation.navigate('Workout'); // Replace with desired navigation target
-  };
-
-  // Discard workout: Confirm and navigate back
-  const discardWorkout = () => {
-    Alert.alert(
-      'Discard Workout',
-      'Are you sure you want to discard this workout?',
+      'Remove Exercise',
+      'Are you sure you want to remove this exercise?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Discard', onPress: () => navigation.navigate('Workout') },
+        {
+          text: 'Remove',
+          onPress: () =>
+            setExercises(exercises.filter((ex) => ex.id !== exerciseId)),
+        },
       ]
+    );
+  };
+
+  // Add a set to a specific exercise
+  const addSetToExercise = (exerciseId) => {
+    setExercises(
+      exercises.map((ex) => {
+        if (ex.id === exerciseId) {
+          const newSet = { id: Date.now().toString(), reps: '', weight: '' };
+          return { ...ex, sets: [...ex.sets, newSet] };
+        }
+        return ex;
+      })
+    );
+  };
+
+  // Remove a set from an exercise (if more than one exists)
+  const removeSetFromExercise = (exerciseId, setId) => {
+    setExercises(
+      exercises.map((ex) => {
+        if (ex.id === exerciseId) {
+          if (ex.sets.length === 1) {
+            Alert.alert('Error', 'At least one set is required.');
+            return ex;
+          }
+          return { ...ex, sets: ex.sets.filter((s) => s.id !== setId) };
+        }
+        return ex;
+      })
+    );
+  };
+
+  // Update reps or weight for a set in a given exercise
+  const updateSetField = (exerciseId, setId, field, value) => {
+    setExercises(
+      exercises.map((ex) => {
+        if (ex.id === exerciseId) {
+          return {
+            ...ex,
+            sets: ex.sets.map((s) =>
+              s.id === setId ? { ...s, [field]: value } : s
+            ),
+          };
+        }
+        return ex;
+      })
     );
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Header: Timer and Finish Button */}
+      {/* Header: Duration and Finish Button */}
       <View style={styles.headerRow}>
         <Text style={styles.timerText}>Duration: {formatTime(elapsedTime)}</Text>
-        <TouchableOpacity style={styles.finishButton} onPress={finishWorkout}>
+        <TouchableOpacity
+          style={styles.finishButton}
+          onPress={() => {
+            Alert.alert(
+              'Workout Finished',
+              `Total Duration: ${formatTime(elapsedTime)}`
+            );
+            navigation.navigate('Workout'); // Replace with desired navigation target
+          }}
+        >
           <Text style={styles.finishButtonText}>Finish</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Current Exercise Entry */}
-      <View style={styles.currentExerciseSection}>
-        <Text style={styles.sectionTitle}>Current Exercise</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Exercise Name"
-          value={currentExerciseName}
-          onChangeText={setCurrentExerciseName}
-        />
+      {/* Message when no exercises have been added */}
+      {exercises.length === 0 ? (
+        <View style={styles.emptyMessageContainer}>
+          <Text style={styles.emptyMessageText}>
+            Add an exercise to begin.
+          </Text>
+        </View>
+      ) : null}
 
-        {currentSets.map((set, index) => (
-          <View key={set.id} style={styles.setRow}>
-            <Text style={styles.setLabel}>Set {index + 1}:</Text>
-            <TextInput
-              style={[styles.input, styles.setInput]}
-              placeholder="Weight (kg)"
-              keyboardType="numeric"
-              value={set.weight}
-              onChangeText={(value) => updateSetField(set.id, 'weight', value)}
-            />
-            <TextInput
-              style={[styles.input, styles.setInput]}
-              placeholder="Reps"
-              keyboardType="numeric"
-              value={set.reps}
-              onChangeText={(value) => updateSetField(set.id, 'reps', value)}
-            />
+      {/* Display each exercise */}
+      {exercises.map((exercise) => (
+        <View key={exercise.id} style={styles.exerciseContainer}>
+          <View style={styles.exerciseHeader}>
+            <Text style={styles.exerciseName}>{exercise.name}</Text>
+            <TouchableOpacity onPress={() => removeExercise(exercise.id)}>
+              <Ionicons name="ellipsis-vertical" size={24} color={theme.colors.text} />
+            </TouchableOpacity>
           </View>
-        ))}
-        <TouchableOpacity style={styles.addSetButton} onPress={addSet}>
-          <Text style={styles.addSetButtonText}>Add Set</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.completeExerciseButton} onPress={completeCurrentExercise}>
-          <Text style={styles.completeExerciseButtonText}>Complete Exercise</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* List of Completed Exercises */}
-      <View style={styles.completedExercisesSection}>
-        <Text style={styles.sectionTitle}>Completed Exercises</Text>
-        {completedExercises.length === 0 ? (
-          <Text style={styles.noExerciseText}>No exercises logged yet.</Text>
-        ) : (
-          completedExercises.map((exercise) => (
-            <View key={exercise.id} style={styles.exerciseItem}>
-              <Text style={styles.exerciseName}>{exercise.name}</Text>
-              {exercise.sets.map((set, index) => (
-                <View key={set.id} style={styles.completedSetRow}>
-                  <Text style={styles.completedSetText}>
-                    Set {index + 1}: {set.reps} reps, {set.weight} kg
-                  </Text>
-                </View>
-              ))}
+          {/* List sets for the exercise */}
+          {exercise.sets.map((set, index) => (
+            <View key={set.id} style={styles.setRow}>
+              <Text style={styles.setLabel}>Set {index + 1}:</Text>
+              {/* Weight comes before Reps */}
+              <TextInput
+                style={[styles.input, styles.setInput]}
+                placeholder="Weight (kg)"
+                keyboardType="numeric"
+                value={set.weight}
+                onChangeText={(value) =>
+                  updateSetField(exercise.id, set.id, 'weight', value)
+                }
+              />
+              <TextInput
+                style={[styles.input, styles.setInput]}
+                placeholder="Reps"
+                keyboardType="numeric"
+                value={set.reps}
+                onChangeText={(value) =>
+                  updateSetField(exercise.id, set.id, 'reps', value)
+                }
+              />
+              <TouchableOpacity
+                onPress={() => addSetToExercise(exercise.id)}
+                style={styles.iconButton}
+              >
+                <Ionicons name="add-circle-outline" size={24} color={theme.colors.primary} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => removeSetFromExercise(exercise.id, set.id)}
+                style={styles.iconButton}
+              >
+                <Ionicons name="remove-circle-outline" size={24} color="#ff6961" />
+              </TouchableOpacity>
             </View>
-          ))
-        )}
+          ))}
+        </View>
+      ))}
+
+      {/* Action Buttons: Add Exercise above Discard */}
+      <View style={styles.actionButtonsContainer}>
+        <TouchableOpacity
+          style={styles.addExerciseButton}
+          onPress={() => setIsAddExerciseModalVisible(true)}
+        >
+          <Text style={styles.addExerciseButtonText}>Add Exercise</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.discardButton}
+          onPress={() => {
+            Alert.alert(
+              'Discard Workout',
+              'Are you sure you want to discard this workout?',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                  text: 'Discard',
+                  onPress: () => navigation.navigate('Workout'),
+                },
+              ]
+            );
+          }}
+        >
+          <Text style={styles.discardButtonText}>Discard Workout</Text>
+        </TouchableOpacity>
       </View>
 
-      {/* Discard Workout Button */}
-      <TouchableOpacity style={styles.discardButton} onPress={discardWorkout}>
-        <Text style={styles.discardButtonText}>Discard Workout</Text>
-      </TouchableOpacity>
+      {/* Modal for adding an exercise name */}
+      <Modal
+        visible={isAddExerciseModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setIsAddExerciseModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Add Exercise</Text>
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Exercise Name"
+              value={newExerciseName}
+              onChangeText={setNewExerciseName}
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => setIsAddExerciseModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalButton} onPress={addExercise}>
+                <Text style={styles.modalButtonText}>Add</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -196,36 +284,34 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  currentExerciseSection: {
+  emptyMessageContainer: {
+    alignItems: 'center',
+    marginBottom: theme.spacing.large,
+  },
+  emptyMessageText: {
+    fontSize: 18,
+    color: theme.colors.text,
+  },
+  exerciseContainer: {
     backgroundColor: '#fff',
     padding: theme.spacing.medium,
     borderRadius: 10,
-    marginBottom: theme.spacing.large,
+    marginBottom: theme.spacing.medium,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 2,
   },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: '600',
-    color: theme.colors.text,
-    marginBottom: theme.spacing.medium,
-    textAlign: 'center',
-  },
-  subSectionTitle: {
-    fontSize: 18,
-    fontWeight: '500',
-    color: theme.colors.text,
+  exerciseHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: theme.spacing.small,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: theme.spacing.small,
+  exerciseName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: theme.colors.text,
   },
   setRow: {
     flexDirection: 'row',
@@ -237,72 +323,91 @@ const styles = StyleSheet.create({
     width: 60,
     color: theme.colors.text,
   },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    backgroundColor: '#fff',
+    padding: 8,
+    borderRadius: 5,
+    marginRight: theme.spacing.small,
+    flex: 1,
+  },
   setInput: {
     flex: 1,
-    marginHorizontal: theme.spacing.small,
   },
-  addSetButton: {
-    backgroundColor: theme.colors.primary,
-    paddingVertical: 10,
-    borderRadius: 5,
+  iconButton: {
+    marginHorizontal: 4,
+  },
+  actionButtonsContainer: {
+    // Stack buttons vertically
+    flexDirection: 'column',
     alignItems: 'center',
-    marginVertical: theme.spacing.medium,
+    marginTop: theme.spacing.large,
   },
-  addSetButtonText: {
-    color: theme.colors.buttonSolidText,
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  completeExerciseButton: {
+  addExerciseButton: {
     backgroundColor: theme.colors.primary,
     paddingVertical: 12,
+    paddingHorizontal: 20,
     borderRadius: 5,
+    width: '80%',
     alignItems: 'center',
-  },
-  completeExerciseButtonText: {
-    color: theme.colors.buttonSolidText,
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  completedExercisesSection: {
-    marginBottom: theme.spacing.large,
-  },
-  noExerciseText: {
-    fontSize: 16,
-    color: theme.colors.text,
-    textAlign: 'center',
-  },
-  exerciseItem: {
-    backgroundColor: '#fff',
-    padding: theme.spacing.medium,
-    borderRadius: 10,
     marginBottom: theme.spacing.medium,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 2,
   },
-  exerciseName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: theme.colors.text,
-    marginBottom: theme.spacing.small,
-  },
-  completedSetRow: {
-    marginBottom: theme.spacing.small,
-  },
-  completedSetText: {
+  addExerciseButtonText: {
+    color: theme.colors.buttonSolidText,
     fontSize: 16,
-    color: theme.colors.text,
+    fontWeight: 'bold',
   },
   discardButton: {
     backgroundColor: '#ff6961',
-    paddingVertical: 15,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     borderRadius: 5,
+    width: '80%',
     alignItems: 'center',
   },
   discardButtonText: {
     color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    backgroundColor: '#fff',
+    padding: theme.spacing.large,
+    borderRadius: 10,
+    width: '80%',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: theme.spacing.medium,
+    textAlign: 'center',
+  },
+  modalInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    borderRadius: 5,
+    marginBottom: theme.spacing.medium,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  modalButton: {
+    backgroundColor: theme.colors.primary,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  modalButtonText: {
+    color: theme.colors.buttonSolidText,
     fontSize: 16,
     fontWeight: 'bold',
   },
